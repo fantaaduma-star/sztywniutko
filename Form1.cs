@@ -29,9 +29,23 @@ public partial class Form1 : Form
 
     private readonly TextBox poleOdpowiedzi;        // tu wyświetlamy odpowiedź
 
+    private Keys skrotZrzutu = Skrot.Wczytaj();     // skrót do zrzutu – zapisany na dysku albo domyślny Ctrl+Alt+A
+    private const Keys SKROT_STOP_KLAWISZE = Keys.Control | Keys.Alt | Keys.S;
+    private bool nagrywanie = false;                // czy właśnie czekamy, aż użytkownik wciśnie nowy skrót
+    private readonly Button przyciskSkrotu;
+
     public Form1()
     {
         InitializeComponent();
+
+        przyciskSkrotu = new Button
+        {
+            Location = new Point(150, 42),
+            Size = new Size(240, 36),
+        };
+        przyciskSkrotu.Click += PrzyciskSkrotu_Click;   // podpinamy zdarzenie, tak jak designer robi dla StartStopButton
+        Controls.Add(przyciskSkrotu);
+        OdswiezPrzyciskSkrotu();
 
         // pole tekstowe tworzone kodem (a nie w designerze): utwórz -> ustaw właściwości -> dodaj do Controls
         poleOdpowiedzi = new TextBox
@@ -56,7 +70,7 @@ public partial class Form1 : Form
 
     private void Uruchom()
     {
-        bool okA = RegisterHotKey(Handle, SKROT_A, MOD_CONTROL | MOD_ALT | MOD_NOREPEAT, (uint)Keys.A);
+        bool okA = ZarejestrujSkrotZrzutu();
         bool okStop = RegisterHotKey(Handle, SKROT_STOP, MOD_CONTROL | MOD_ALT | MOD_NOREPEAT, (uint)Keys.S);
 
         if (!okA || !okStop)
@@ -77,6 +91,70 @@ public partial class Form1 : Form
         nasluchuje = false;
         StartStopButton.Text = "START";
     }
+
+    private bool ZarejestrujSkrotZrzutu()
+    {
+        UnregisterHotKey(Handle, SKROT_A);   // ten sam numer nie może być zarejestrowany dwa razy
+        return RegisterHotKey(Handle, SKROT_A, Skrot.Modyfikatory(skrotZrzutu) | MOD_NOREPEAT, Skrot.KodKlawisza(skrotZrzutu));
+    }
+
+    // ---------- nagrywanie nowego skrótu ----------
+
+    private void PrzyciskSkrotu_Click(object? sender, EventArgs e)
+    {
+        nagrywanie = true;
+        if (nasluchuje)
+            UnregisterHotKey(Handle, SKROT_A);   // inaczej stary skrót zamiast trafić do okna, zrobiłby zrzut
+        przyciskSkrotu.Text = "Wciśnij nowy skrót... (Esc = anuluj)";
+    }
+
+    // ProcessCmdKey dostaje KAŻDY klawisz wciśnięty w oknie – razem z modyfikatorami w jednej wartości keyData,
+    // także te, których KeyDown nie widzi (Tab, strzałki, Enter, kombinacje z Alt).
+    protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+    {
+        if (!nagrywanie)
+            return base.ProcessCmdKey(ref msg, keyData);   // normalne działanie okna
+
+        Keys klawisz = keyData & Keys.KeyCode;
+
+        if (keyData == Keys.Escape)
+            ZakonczNagrywanie(null);
+        else if (Skrot.ToSamModyfikator(klawisz))
+            { }                                             // sam Ctrl/Alt/Shift – czekamy na właściwy klawisz
+        else if (!keyData.HasFlag(Keys.Control) && !keyData.HasFlag(Keys.Alt))
+            przyciskSkrotu.Text = "Dodaj Ctrl albo Alt! (Esc = anuluj)";
+        else if (keyData == SKROT_STOP_KLAWISZE)
+            przyciskSkrotu.Text = "Ten skrót to STOP – wybierz inny";
+        else
+            ZakonczNagrywanie(keyData);
+
+        return true;   // true = "obsłużyłem ten klawisz", nie przekazuj go dalej (np. do przycisku)
+    }
+
+    // nowy == null oznacza anulowanie
+    private void ZakonczNagrywanie(Keys? nowy)
+    {
+        nagrywanie = false;
+        Keys stary = skrotZrzutu;
+        if (nowy != null)
+            skrotZrzutu = nowy.Value;
+
+        if (nasluchuje && !ZarejestrujSkrotZrzutu())
+        {
+            MessageBox.Show($"Skrótu {Skrot.Opis(skrotZrzutu)} używa już inny program. Zostaje {Skrot.Opis(stary)}.");
+            skrotZrzutu = stary;
+            ZarejestrujSkrotZrzutu();
+        }
+        else if (nowy != null)
+        {
+            Skrot.Zapisz(skrotZrzutu);           // zapamiętujemy na następne uruchomienie
+        }
+
+        OdswiezPrzyciskSkrotu();
+    }
+
+    private void OdswiezPrzyciskSkrotu() =>
+        przyciskSkrotu.Text = $"Skrót zrzutu: {Skrot.Opis(skrotZrzutu)} (zmień)";
 
     // Każde okno ma metodę WndProc, przez którą przechodzą WSZYSTKIE komunikaty od Windows
     // (kliknięcia, ruchy myszy, zmiana rozmiaru...). Wyłapujemy z nich WM_HOTKEY.
