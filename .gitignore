@@ -1,0 +1,32 @@
+# Build output
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Ll]og/
+
+# User-specific files
+*.user
+*.suo
+*.userprefs
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# Visual Studio
+.vs/
+
+# NuGet
+*.nupkg
+packages/
+
+# Test results
+TestResults/
+[Tt]est[Rr]esult*/
+
+# OS
+Thumbs.db
+.DS_Store
