@@ -23,7 +23,7 @@ public partial class Form1 : Form
 
     private readonly List<string> zrzuty = new();   // ścieżki do zrobionych zrzutów – do późniejszego użytku
 
-    private const string PROMPT = "Opisz krótko po polsku, co widać na tym zrzucie ekranu.";
+    private const string PROMPT = "/abcd-answer-number";
 
     private string ostatniaOdpowiedz = "";          // ostatnia odpowiedź Claude'a – do dalszego użytku w programie
 
@@ -70,6 +70,7 @@ public partial class Form1 : Form
 
     private void Uruchom()
     {
+        
         bool okA = ZarejestrujSkrotZrzutu();
         bool okStop = RegisterHotKey(Handle, SKROT_STOP, MOD_CONTROL | MOD_ALT | MOD_NOREPEAT, (uint)Keys.S);
 
@@ -200,6 +201,8 @@ public partial class Form1 : Form
         {
             // await: okno działa dalej, a po odpowiedzi kod wraca tutaj (na wątek okna)
             ostatniaOdpowiedz = await KlientClaude.ZapytajOZrzut(sciezka, PROMPT);
+            int answer = int.Parse(ostatniaOdpowiedz);
+            CapsLock.FlashCaps(answer,60,100);
             poleOdpowiedzi.Text = ostatniaOdpowiedz;
         }
         catch (Exception ex)

@@ -27,7 +27,19 @@ Okno „Szponcik” z jednym przyciskiem `StartStopButton`:
   Opcjonalny parametr `skill` → prompt zaczyna się od `/nazwa-skilla` (sprawdzone: działa w `claude -p`).
   Bo katalog roboczy to folder zrzutów, widać tylko skille osobiste (`~/.claude/skills`) i z pluginów. Użytkownik nie chce płacić za klucz API —
   nie wracać do pakietu NuGet `Anthropic`.
-- `poleOdpowiedzi` (TextBox) jest tworzone kodem w konstruktorze `Form1`, nie w designerze.
+- `CapsLock.cs` — statyczna klasa: `FlashCaps(powtorzenia, czasFleszaMs, pauzaMs)` → `Task`. Mruga diodą,
+  symulując wciśnięcia Caps Locka (`keybd_event`), zawsze parzystą liczbę razy — stan wraca do początkowego,
+  bez odczytywania go (odczyt stanu w aplikacji w tle bywa nieaktualny). Na razie nigdzie nie wywoływana.
+- `Skrot.cs` — statyczna klasa pomocnicza dla skrótu zrzutu (wartość `Keys` z flagami, np. `Control | Alt | A`):
+  `Opis`, `Modyfikatory`/`KodKlawisza` (dla `RegisterHotKey`), `Wczytaj`/`Zapisz` do `%LOCALAPPDATA%\sztywniutko\skrot.txt`.
+- `poleOdpowiedzi` (TextBox) i `przyciskSkrotu` (Button) są tworzone kodem w konstruktorze `Form1`, nie w designerze.
+- Nagrywanie skrótu: klik `przyciskSkrotu` → `nagrywanie = true` → nadpisany `ProcessCmdKey` łapie kombinację
+  (wymagany Ctrl lub Alt, Esc anuluje, STOP = Ctrl+Alt+S zarezerwowany) → `ZakonczNagrywanie` rejestruje i zapisuje.
+- Polski układ klawiatury: Ctrl+Alt = AltGr, więc Ctrl+Alt+A/S blokują globalnie wpisywanie „ą”/„ś”, gdy nasłuch jest włączony.
+
+- `sztywniutko.Tests/` — projekt testów xUnit (`net10.0-windows`, referencja do głównego projektu, dodany do `.sln`).
+  Główny `.csproj` wyklucza ten folder (`Compile Remove`). `CapsLockTests` naprawdę mruga diodą.
+  Uruchamianie: `dotnet test sztywniutko.Tests\sztywniutko.Tests.csproj`.
 
 ## Konwencje
 
