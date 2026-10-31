@@ -28,7 +28,7 @@ public static class CapsLock
     }
 
     // Udaje wciśnięcie i puszczenie klawisza Caps Lock.
-    private static void NacisnijCapsLock()
+    public static void NacisnijCapsLock()
     {
         keybd_event(VK_CAPITAL, SCAN_CAPITAL, 0, UIntPtr.Zero);                  // wciśnij
         keybd_event(VK_CAPITAL, SCAN_CAPITAL, KEYEVENTF_KEYUP, UIntPtr.Zero);    // puść

@@ -244,4 +244,8 @@ public partial class Form1 : Form
     }
 
 
+    private void LEDTest_CheckedChanged(object sender, EventArgs e)
+    {
+        CapsLock.NacisnijCapsLock();
+    }
 }

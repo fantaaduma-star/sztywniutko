@@ -35,6 +35,7 @@ partial class Form1
         PauseDuration = new System.Windows.Forms.NumericUpDown();
         label1 = new System.Windows.Forms.Label();
         label2 = new System.Windows.Forms.Label();
+        LEDTest = new System.Windows.Forms.CheckBox();
         ((System.ComponentModel.ISupportInitialize)FlashDuration).BeginInit();
         ((System.ComponentModel.ISupportInitialize)PauseDuration).BeginInit();
         SuspendLayout();
@@ -63,10 +64,14 @@ partial class Form1
         // 
         // PauseDuration
         // 
+        PauseDuration.Increment = new decimal(new int[] { 100, 0, 0, 0 });
         PauseDuration.Location = new System.Drawing.Point(278, 51);
+        PauseDuration.Maximum = new decimal(new int[] { 2000, 0, 0, 0 });
+        PauseDuration.Minimum = new decimal(new int[] { 100, 0, 0, 0 });
         PauseDuration.Name = "PauseDuration";
         PauseDuration.Size = new System.Drawing.Size(120, 23);
         PauseDuration.TabIndex = 2;
+        PauseDuration.Value = new decimal(new int[] { 100, 0, 0, 0 });
         PauseDuration.ValueChanged += PauseDuration_ValueChanged;
         // 
         // label1
@@ -86,11 +91,22 @@ partial class Form1
         label2.TabIndex = 4;
         label2.Text = "Pause duration";
         // 
+        // LEDTest
+        // 
+        LEDTest.Location = new System.Drawing.Point(23, -1);
+        LEDTest.Name = "LEDTest";
+        LEDTest.Size = new System.Drawing.Size(104, 24);
+        LEDTest.TabIndex = 5;
+        LEDTest.Text = "Test LED";
+        LEDTest.UseVisualStyleBackColor = true;
+        LEDTest.CheckedChanged += LEDTest_CheckedChanged;
+        // 
         // Form1
         // 
         AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
         AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        ClientSize = new System.Drawing.Size(656, 135);
+        ClientSize = new System.Drawing.Size(657, 155);
+        Controls.Add(LEDTest);
         Controls.Add(label2);
         Controls.Add(label1);
         Controls.Add(PauseDuration);
@@ -102,6 +118,8 @@ partial class Form1
         ((System.ComponentModel.ISupportInitialize)PauseDuration).EndInit();
         ResumeLayout(false);
     }
+
+    private System.Windows.Forms.CheckBox LEDTest;
 
     private System.Windows.Forms.NumericUpDown FlashDuration;
     private System.Windows.Forms.NumericUpDown PauseDuration;
