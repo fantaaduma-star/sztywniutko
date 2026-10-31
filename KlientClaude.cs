@@ -13,7 +13,7 @@ public static class KlientClaude
     // "async Task<string>" = metoda działa w tle i kiedyś zwróci string.
     // Wywołujemy ją z "await", dzięki czemu okno nie zamarza w czasie czekania na odpowiedź.
     // skill = nazwa skilla bez ukośnika, np. "csharp-wyklad"; null = bez skilla
-    public static async Task<string> ZapytajOZrzut(string sciezkaZrzutu, string prompt, string? skill = null)
+    public static async Task<string> ZapytajOZrzut(string sciezkaZrzutu, string prompt)
     {
         var start = new ProcessStartInfo
         {
@@ -51,12 +51,9 @@ public static class KlientClaude
         Task<string> wyjscie = proces.StandardOutput.ReadToEndAsync();
         Task<string> bledy = proces.StandardError.ReadToEndAsync();
 
-        string polecenie = $"Przeczytaj plik obrazu {Path.GetFileName(sciezkaZrzutu)} (narzędziem Read). "
-                         + $"{prompt} Odpowiedz tylko samą odpowiedzią, bez wstępu.";
+        string polecenie = $"{prompt} Przeczytaj plik obrazu {Path.GetFileName(sciezkaZrzutu)} (narzędziem Read).";
 
         // skill działa tylko, gdy "/nazwa" stoi na samym POCZĄTKU promptu (jak wpisane ręcznie w czacie)
-        if (skill != null)
-            polecenie = $"/{skill} {polecenie}";
         await proces.StandardInput.WriteAsync(polecenie);
         proces.StandardInput.Close();                 // koniec wejścia = "to cały prompt"
 
