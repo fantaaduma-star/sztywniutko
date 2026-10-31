@@ -20,7 +20,8 @@ public partial class Form1 : Form
     private const int SKROT_STOP = 2;
 
     private bool nasluchuje = false;
-
+    private int FlashDurationms = 1000;
+    private int PauseDurationms = 1000;
     private readonly List<string> zrzuty = new();   // ścieżki do zrobionych zrzutów – do późniejszego użytku
 
     private const string PROMPT = "/abcd-answer-number";
@@ -38,14 +39,21 @@ public partial class Form1 : Form
     {
         InitializeComponent();
 
+        // Kontrolki tworzone kodem designer NIE pokazuje (on rysuje tylko to, co jest w InitializeComponent).
+        // Pozycje liczymy względem kontrolek z designera, żeby nic na siebie nie nachodziło.
+
         przyciskSkrotu = new Button
         {
-            Location = new Point(150, 42),
-            Size = new Size(240, 36),
+            Location = new Point(PauseDuration.Right + 24, StartStopButton.Top),   // na prawo od "Pause duration"
+            Size = new Size(220, 36),
         };
         przyciskSkrotu.Click += PrzyciskSkrotu_Click;   // podpinamy zdarzenie, tak jak designer robi dla StartStopButton
         Controls.Add(przyciskSkrotu);
         OdswiezPrzyciskSkrotu();
+
+        // pole odpowiedzi pod wszystkimi kontrolkami – okno powiększamy o miejsce na nie
+        int gora = Controls.Cast<Control>().Max(c => c.Bottom) + 12;   // dolna krawędź najniższej kontrolki + odstęp
+        ClientSize = new Size(ClientSize.Width, gora + 160);
 
         // pole tekstowe tworzone kodem (a nie w designerze): utwórz -> ustaw właściwości -> dodaj do Controls
         poleOdpowiedzi = new TextBox
@@ -53,8 +61,8 @@ public partial class Form1 : Form
             Multiline = true,
             ReadOnly = true,
             ScrollBars = ScrollBars.Vertical,
-            Location = new Point(12, 90),
-            Size = new Size(ClientSize.Width - 24, ClientSize.Height - 102),
+            Location = new Point(12, gora),
+            Size = new Size(ClientSize.Width - 24, ClientSize.Height - gora - 12),
             Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right,   // rośnie razem z oknem
         };
         Controls.Add(poleOdpowiedzi);
@@ -70,11 +78,8 @@ public partial class Form1 : Form
 
     private void Uruchom()
     {
-        
         bool okA = ZarejestrujSkrotZrzutu();
-        bool okStop = RegisterHotKey(Handle, SKROT_STOP, MOD_CONTROL | MOD_ALT | MOD_NOREPEAT, (uint)Keys.S);
-
-        if (!okA || !okStop)
+        if (!okA)
         {
             MessageBox.Show("Nie udało się zarejestrować skrótu – może używa go inny program.");
             Zatrzymaj();
@@ -186,7 +191,7 @@ public partial class Form1 : Form
         {
             sciezka = ZrzutEkranu.ZrobIZapisz();
             zrzuty.Add(sciezka);
-            System.Media.SystemSounds.Beep.Play();          // słychać nawet, gdy okno jest zminimalizowane
+            //System.Media.SystemSounds.Beep.Play();          // słychać nawet, gdy okno jest zminimalizowane
             Text = $"Zrzut nr {zrzuty.Count}: {Path.GetFileName(sciezka)}";
         }
         catch (Exception ex)
@@ -201,14 +206,22 @@ public partial class Form1 : Form
         {
             // await: okno działa dalej, a po odpowiedzi kod wraca tutaj (na wątek okna)
             ostatniaOdpowiedz = await KlientClaude.ZapytajOZrzut(sciezka, PROMPT);
-            int answer = int.Parse(ostatniaOdpowiedz);
-            CapsLock.FlashCaps(answer,60,100);
-            poleOdpowiedzi.Text = ostatniaOdpowiedz;
+            if (int.TryParse(ostatniaOdpowiedz, out int answer))
+            {
+                CapsLock.FlashCaps(answer,FlashDurationms,PauseDurationms);
+            }
+            else
+            {
+                CapsLock.FlashCaps(10,60,60);
+            }
+            poleOdpowiedzi.Text +=", "+ ostatniaOdpowiedz;
         }
         catch (Exception ex)
         {
             // brak claude.exe, brak internetu, przekroczony czas, wylogowane konto...
             poleOdpowiedzi.Text = $"Błąd przy zapytaniu do Claude'a: {ex.Message}";
+            CapsLock.FlashCaps(10,60,60);
+            
         }
     }
 
@@ -217,4 +230,18 @@ public partial class Form1 : Form
         Zatrzymaj();                           // sprzątamy: zwalniamy skróty przy zamykaniu
         base.OnFormClosed(e);
     }
+
+
+
+    private void FlashDuration_ValueChanged(object sender, EventArgs e)
+    {
+        FlashDurationms = (int)FlashDuration.Value;
+    }
+
+    private void PauseDuration_ValueChanged(object sender, EventArgs e)
+    {
+        PauseDurationms = (int)PauseDuration.Value;
+    }
+
+
 }
