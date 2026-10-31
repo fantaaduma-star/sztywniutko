@@ -30,3 +30,6 @@ TestResults/
 # OS
 Thumbs.db
 .DS_Store
+
+# Gotowy plik EXE (dotnet publish)
+publish/

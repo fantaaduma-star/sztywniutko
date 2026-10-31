@@ -93,7 +93,7 @@ partial class Form1
         // 
         // LEDTest
         // 
-        LEDTest.Location = new System.Drawing.Point(23, -1);
+        LEDTest.Location = new System.Drawing.Point(23, 12);
         LEDTest.Name = "LEDTest";
         LEDTest.Size = new System.Drawing.Size(104, 24);
         LEDTest.TabIndex = 5;
@@ -105,7 +105,7 @@ partial class Form1
         // 
         AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
         AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        ClientSize = new System.Drawing.Size(657, 155);
+        ClientSize = new System.Drawing.Size(740, 155);
         Controls.Add(LEDTest);
         Controls.Add(label2);
         Controls.Add(label1);

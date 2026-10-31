@@ -206,7 +206,7 @@ public partial class Form1 : Form
         {
             // await: okno działa dalej, a po odpowiedzi kod wraca tutaj (na wątek okna)
             ostatniaOdpowiedz = await KlientClaude.ZapytajOZrzut(sciezka, PROMPT);
-            if (int.TryParse(ostatniaOdpowiedz, out int answer))
+            if (int.TryParse(ostatniaOdpowiedz, out int answer) && answer!=0) //przyjalem ze jak czacik sie wyjebie to zwraca 0
             {
                 CapsLock.FlashCaps(answer,FlashDurationms,PauseDurationms);
             }
