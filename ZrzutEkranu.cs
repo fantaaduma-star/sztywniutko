@@ -22,7 +22,7 @@ public static class ZrzutEkranu
         }
 
         Directory.CreateDirectory(Folder);                     // nic nie robi, jeśli folder już istnieje
-        string sciezka = Path.Combine(Folder, $"zrzut_{DateTime.Now:yyyy-MM-dd_HH-mm-ss-fff}.png");
+        string sciezka = Path.Combine(Folder, $"Stare_Kolokwia_{DateTime.Now:yyyy-MM-dd_HH-mm-ss-fff}.png");
         bitmapa.Save(sciezka, System.Drawing.Imaging.ImageFormat.Png);
 
         return sciezka;
