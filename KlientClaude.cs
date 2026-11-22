@@ -32,7 +32,6 @@ public static class KlientClaude
         // to samo, co w terminalu: claude -p --output-format text --allowedTools Read
         // -p = jedno pytanie, jedna odpowiedź i koniec; Read = pozwalamy mu tylko czytać pliki
         start.ArgumentList.Add("-p");
-        start.ArgumentList.Add("--model sonnet");
         start.ArgumentList.Add("--output-format");
         start.ArgumentList.Add("text");
         start.ArgumentList.Add("--allowedTools");

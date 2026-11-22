@@ -211,7 +211,7 @@ public partial class Form1 : Form
             {
                 int ans = int.Parse(s);
                 await CapsLock.FlashCaps(ans, FlashDurationms, PauseDurationms);
-                Thread.Sleep(2000);
+                Thread.Sleep(3000);
             }
             poleOdpowiedzi.Text +="|"+ ostatniaOdpowiedz;
         }
